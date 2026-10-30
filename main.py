@@ -14,7 +14,7 @@ from mediapipe.tasks.python.vision import (
 
 
 synth = tinysoundfont.Synth()
-sfid = synth.sfload("Full_Grand_Piano.sf2")
+sfid = synth.sfload("Wind_of_Fjords_MIDI.sf2")
 synth.program_select(0, sfid, 0, 0)
 synth.start()
 time.sleep(0.5)
