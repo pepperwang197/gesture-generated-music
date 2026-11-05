@@ -69,7 +69,7 @@ def main():
     while True:
         ok, frame = cap.read()
         if not ok:
-            break
+          break
 
         frame = cv2.flip(frame, 1)
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -78,9 +78,9 @@ def main():
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
         results = detector.detect_for_video(mp_image, timestamp_ms)
         
-        if results.hand_landmarks:
+        if len(results.hand_landmarks) >= 2:
             for hand_landmarks in results.hand_landmarks:
-                draw_hand(frame, hand_landmarks)
+              draw_hand(frame, hand_landmarks)
 
             curr_tick = cv2.getTickCount()
             fps = cv2.getTickFrequency() / (curr_tick - prev_tick)
@@ -89,18 +89,20 @@ def main():
             freq = 440*2**((note-69)/12)
             #print(freq)
             sinewave.set_frequency(freq)
-            velocity = results.hand_landmarks[0][8].x * 50+0
+            velocity = results.hand_landmarks[1][8].x * 50+0
             sinewave.set_volume(velocity)
             sinewave.play()
             #synth.noteon(0, note, velocity)
             print("note:", note, "velocity:", velocity)
             #print("sinewave:",sinewave.decibels_per_second)
-            
+        else:
+            sinewave.stop()
+        
         cv2.imshow("Hand Tracking", frame)
         key = cv2.waitKey(1) & 0xFF
         if key == ord("q"):
             break
-
+        
   cap.release()
   cv2.destroyAllWindows()
 
