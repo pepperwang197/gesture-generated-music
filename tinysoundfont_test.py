@@ -2,7 +2,7 @@ import tinysoundfont
 import time
 
 synth = tinysoundfont.Synth()
-sfid = synth.sfload("JazzFlute.sf2")
+sfid = synth.sfload("soundfonts/trumpet_collection.sf2")
 synth.program_select(0, sfid, 0, 0)
 synth.start()
 

@@ -116,7 +116,7 @@ def main():
 
       curr_tick = cv2.getTickCount()
       fps = cv2.getTickFrequency() / (curr_tick - prev_tick)
-      prev_tick = curr_tick
+      
       cv2.putText(frame, f"FPS: {fps:.1f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2, cv2.LINE_AA)
 
       cv2.imshow("Hand Tracking", frame)

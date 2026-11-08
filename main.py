@@ -3,7 +3,10 @@ import time
 import urllib.request
 import tinysoundfont
 
+from pysinewave import SineWave
+
 import cv2
+import numpy as np
 import mediapipe as mp
 from mediapipe.tasks.python.core.base_options import BaseOptions
 from mediapipe.tasks.python.vision import (
@@ -11,24 +14,6 @@ from mediapipe.tasks.python.vision import (
   HandLandmarkerOptions,
   RunningMode,
 )
-
-
-synth = tinysoundfont.Synth()
-sfid = synth.sfload("Wind_of_Fjords_MIDI.sf2")
-synth.program_select(0, sfid, 0, 0)
-synth.start()
-time.sleep(0.5)
-
-synth.noteon(0, 48, 100)
-time.sleep(0.5)
-synth.noteon(0, 52, 100)
-time.sleep(0.5)
-synth.noteon(0, 55, 100)
-
-time.sleep(0.5)
-synth.noteoff(0, 48)
-synth.noteoff(0, 52)
-synth.noteoff(0, 55)
 
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "hand_landmarker.task")
@@ -61,7 +46,42 @@ def draw_hand(frame, hand_landmarks):
         pt = landmark_px(landmark, w, h)
         cv2.circle(frame, pt, 5, (0, 220, 0), -1, cv2.LINE_AA)
 
+def normalize(landmarks):
+   landmark_list = list(landmarks)
+   wrist = landmark_list[0]
+   translated = np.subtract(landmark_list,wrist)
+   mcp= translated[5]
+   wrist_t=translated[0]
+   scale_factor = np.linalg.norm(mcp - wrist)
+   if scale_factor  ==0:
+      scale_factor = 0.000001
+   return translated/scale_factor
 
+def detect_gesture(landmarks):
+   n_landmarks = normalize(landmarks)
+   if (n_landmarks[4] < n_landmarks[8] and n_landmarks[4] < n_landmarks[12]
+       and n_landmarks[4]<n_landmarks[16] and n_landmarks[4]<n_landmarks[20]):
+      gesture = 1
+   elif (n_landmarks[8] < n_landmarks[4] and n_landmarks[8] < n_landmarks[12]
+          and n_landmarks[8]<n_landmarks[16] and n_landmarks[8]<n_landmarks[20]):
+         gesture = 2
+   elif (n_landmarks[12] < n_landmarks[4] and n_landmarks[12] < n_landmarks[8]
+             and n_landmarks[12]<n_landmarks[16] and n_landmarks[12]<n_landmarks[20]):
+            gesture = 3
+   elif (n_landmarks[16] < n_landmarks[4] and n_landmarks[16] < n_landmarks[8]
+                and n_landmarks[16]<n_landmarks[12] and n_landmarks[16]<n_landmarks[20]):
+               gesture = 4
+   elif (n_landmarks[20] < n_landmarks[4] and n_landmarks[20] < n_landmarks[8]
+                   and n_landmarks[20]<n_landmarks[12] and n_landmarks[20]<n_landmarks[16]):
+       gesture = 5
+   else:
+      gesture = 0
+   return gesture
+    
+  
+
+  
+   
 def main():
   download_model()
 
@@ -76,15 +96,16 @@ def main():
     min_hand_detection_confidence=0.6,
     min_tracking_confidence=0.5,
   )
-  synth.start()
   start_time = time.time()
   prev_tick = cv2.getTickCount()
+
+  
 
   with HandLandmarker.create_from_options(options) as detector:
     while True:
         ok, frame = cap.read()
         if not ok:
-            break
+          break
 
         frame = cv2.flip(frame, 1)
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -95,21 +116,25 @@ def main():
         
         if results.hand_landmarks:
             for hand_landmarks in results.hand_landmarks:
-                draw_hand(frame, hand_landmarks)
+              draw_hand(frame, hand_landmarks)
 
             curr_tick = cv2.getTickCount()
             fps = cv2.getTickFrequency() / (curr_tick - prev_tick)
             prev_tick = curr_tick
-            note = round(72 - results.hand_landmarks[0][8].y*24)
-            velocity = results.hand_landmarks[0][8].x * 127
-            synth.noteon(0, note, velocity)
-            print("note:", note, "velocity:", velocity)
-            
+
+            handL=(element.y for element in results.hand_landmarks[0])
+            gesture = detect_gesture(handL)
+            print("gesture", gesture)
+            #synth.noteon(0, note, velocity)
+            #print("note:", note, "velocity:", velocity)
+            #print("sinewave:",sinewave.decibels_per_second)
+
+        
         cv2.imshow("Hand Tracking", frame)
         key = cv2.waitKey(1) & 0xFF
         if key == ord("q"):
             break
-
+        
   cap.release()
   cv2.destroyAllWindows()
 
