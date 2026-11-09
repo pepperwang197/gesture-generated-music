@@ -116,10 +116,8 @@ def main():
         min_hand_detection_confidence=0.6,
         min_tracking_confidence=0.5,
     )
+    
     start_time = time.time()
-    prev_tick = cv2.getTickCount()
-
-    sinewave = SineWave(decibels_per_second = 10)
 
     with HandLandmarker.create_from_options(options) as detector:
         while True:
@@ -133,41 +131,40 @@ def main():
             timestamp_ms = int((time.time() - start_time) * 1000)
             mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
             results = detector.detect_for_video(mp_image, timestamp_ms)
-            
+
             for hand_landmarks in results.hand_landmarks:
                 draw_hand(frame, hand_landmarks)
 
             if len(results.hand_landmarks) >= 2:
-                handL = (element.y for element in results.hand_landmarks[0])
-                gestureL = detect_gesture(handL)
-                handR = (element.y for element in results.hand_landmarks[1])
-                gestureR = detect_gesture(handR)
+                hand_l = (element.y for element in results.hand_landmarks[0])
+                gesture_l = detect_gesture(hand_l)
+                hand_r = (element.y for element in results.hand_landmarks[1])
+                gesture_r = detect_gesture(hand_r)
 
-                noteL = position_to_note(results.hand_landmarks[0][8].y)
-                velocityL = results.hand_landmarks[0][8].x
-                noteR = position_to_note(results.hand_landmarks[1][8].y)
-                velocityR = results.hand_landmarks[1][8].x
-                synths[gestureL].notes_off(0)
-                synths[gestureR].notes_off(0)
-                synths[gestureL].noteon(0, round(noteL), velocityL*127)
-                synths[gestureR].noteon(0, round(noteR), velocityR*127)
-                diffL = noteL%1
-                diffR = noteR%1
-                if diffL < 0.5:
-                    synths[gestureL].pitchbend(0, int(8192 + diffL*2048*2))
-                    print(int(8192 + diffL*1024))
-                elif diffL >=0.5:
-                    synths[gestureL].pitchbend(0, int(8192 - (1-diffL)*2048*2))
-                    print(int(8192 - (1-diffL)*1024))
-                if diffR < 0.5:
-                    synths[gestureR].pitchbend(0, int(8192 + diffR*2048*2))
-                    print(int(8192 + diffR*1024))
-                elif diffR >=0.5:
-                    synths[gestureR].pitchbend(0, int(8192 - (1-diffR)*2048*2))
-                    print(int(8192 - (1-diffR)*1024))
+                note_l = position_to_note(results.hand_landmarks[0][8].y)
+                velocity_l = results.hand_landmarks[0][8].x
+                note_r = position_to_note(results.hand_landmarks[1][8].y)
+                velocity_r = results.hand_landmarks[1][8].x
+                synths[gesture_l].notes_off(0)
+                synths[gesture_r].notes_off(0)
+                synths[gesture_l].noteon(0, round(note_l), velocity_l*127)
+                synths[gesture_r].noteon(0, round(note_r), velocity_r*127)
+                diff_l = note_l%1
+                diff_r = note_r%1
+                if diff_l < 0.5:
+                    synths[gesture_l].pitchbend(0, int(8192 + diff_l*2048*2))
+                    print(int(8192 + diff_l*1024))
+                elif diff_l >=0.5:
+                    synths[gesture_l].pitchbend(0, int(8192 - (1-diff_l)*2048*2))
+                    print(int(8192 - (1-diff_l)*1024))
+                if diff_r < 0.5:
+                    synths[gesture_r].pitchbend(0, int(8192 + diff_r*2048*2))
+                    print(int(8192 + diff_r*1024))
+                elif diff_r >=0.5:
+                    synths[gesture_r].pitchbend(0, int(8192 - (1-diff_r)*2048*2))
+                    print(int(8192 - (1-diff_r)*1024))
                 #time.sleep(0.01)
             else:
-                #sinewave.stop()
                 synth.notes_off(0)
             
             cv2.imshow("Hand Tracking", frame)
