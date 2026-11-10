@@ -28,6 +28,10 @@ To play soundfonts, we used the Python `pysoundfont` library. Instruments like p
 We wanted our theremin to have a to octave range centered around middle C (C4). Meidapipe's x and y coordinates are on a scale from 0 to 1 with origin centered at the top left of the screen. In order to get a 2 octave range we would need to expand the coordinate values from 0-1 to 0-24. So, we have `note = 72 - results.hand_landmarks[0][8].y*24`. We chose 72 since it is the high end of the range (note 72 is C3, one octave above middle C), and lets the theremin play at the desired pitch range.
 
 
-## Extracting frequency from notes
+### Extracting frequency from notes
 
 For the sine wave theremin we used pysinewave's `sinewave` function in to play different frequencies. Therefore, we would need to these note values into their respective frequency values. Human pitch perception is on a logarithmic scale, so the increase of pitch from 220 Hz to 440 Hz will sound the same as the increase from 220 Hz to 440 Hz. To convert the note to frequency we use the equation `freq = 440 * 2 ** ((note - 69) / 12)`440 is the frequency of A4 (note 69), 12 is the number of notes in an octave, note - 69 is how far off the note is from A4. Making this an exponential function with base 2 let's frequency double at each octave.
+
+### Setting volume
+
+To set the bolume for the theremin we extracted the x coordinate of the right hand and scaled that value from -60 to 0 (since volume in pysinewave is from -60 to 0). So when the right hand would be at the left edge of the screen the volume would be set to -60, and when it is on the right side of the screen it would be almost full volume.
