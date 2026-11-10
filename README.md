@@ -49,3 +49,7 @@ We decided to implement a very simple gesture We used media pipe's per-placed la
 ### Multiple instruments at once
 
 Unlike the sinewave theremin, we decided to let each hand's x and y coordinate control a respective instrument's pitch and volume. At the start of the code, we initialized a synth for each instrument and only played notes from them when each respective gesture was detected from one of the hands.
+
+## Challenges and Lessons
+
+One challenge we faced was the lack of documentation about many of the libraries we used. For instance, when we first tried to look at mediapipe's documentation, the documentation we initially found was out of date, which led to confusion. We also found that looking some of the unofficial documentation was helpful for understanding how to properly use media pipe. Furthermore, the documentation surrounding pysinewave was incomplete, so we had to find out how to use it largely on our own.
