@@ -34,6 +34,8 @@ We wanted our theremin to have a to octave range centered around middle C (C4). 
 
 For the sine wave theremin we used pysinewave's `sinewave` function in to play different frequencies. Therefore, we would need to these note values into their respective frequency values. Human pitch perception is on a logarithmic scale, so the increase of pitch from 220 Hz to 440 Hz will sound the same as the increase from 220 Hz to 440 Hz. To convert the note to frequency we use the equation `freq = 440 * 2 ** ((note - 69) / 12)`440 is the frequency of A4 (note 69), 12 is the number of notes in an octave, note - 69 is how far off the note is from A4. Making this an exponential function with base 2 let's frequency double at each octave.
 
+<img width="810" height="468" alt="Screenshot from 2026-11-10 17-25-55" src="https://github.com/user-attachments/assets/64faba1f-d968-4c54-af7d-a9f29471bc7a" />
+
 ### Setting volume
 
 To set the bolume for the theremin we extracted the x coordinate of the right hand and scaled that value from -60 to 0 (since volume in pysinewave is from -60 to 0). So when the right hand would be at the left edge of the screen the volume would be set to -60, and when it is on the right side of the screen it would be almost full volume.
@@ -52,6 +54,18 @@ We decided to implement a very simple gesture We used media pipe's per-placed la
 
 Unlike the sinewave theremin, we decided to let each hand's x and y coordinate control a respective instrument's pitch and volume. At the start of the code, we initialized a synth for each instrument and only played notes from them when each respective gesture was detected from one of the hands.
 
-## Challenges and Lessons
+## Challenges
 
-One challenge we faced was the lack of documentation about many of the libraries we used. For instance, when we first tried to look at mediapipe's documentation, the documentation we initially found was out of date, which led to confusion. We also found that looking some of the unofficial documentation was helpful for understanding how to properly use media pipe. Furthermore, the documentation surrounding pysinewave was incomplete, so we had to find out how to use it largely on our own.
+### Sparse and outdated documentation
+
+Several of our libraries were poorly documented. When we first looked up MediaPipe, the documentation we found was out of date, which led to confusion until we located the up-to-date documentation. We also found that looking at unofficial tutorials and community examples turned out to be a valuable supplement for understanding how to use it correctly. The documentation for `pysinewave` was even more incomplete, so we learned its behavior largely through experimentation. For example, one of the issues we had was the volume not changing when we we used the `set_volume` function. We later found out it was because we had to change the rate at which volume changes it. 
+
+### Code organization
+
+We didn't document or organize our code as we wrote it. File names drifted away from their contents. For example, our `sinewave.py` file ended up containing no code related to the sine wave theremin. As a result, it was hard to tell where functionality lived or what each file was responsible for, which slowed down debugging and made collaboration harder.
+
+### Lessons
+
+A small investment in organization at the beginning would have saved us a lot of time later. It is beneficial to focus on organizing code while we write it ex: docstrings and comments as we write code, rather than afterward. Another lesson we learned was to always git pull/push when you are starting/finishing coding. Throughout the project we largely worked synchronously together via VScode's live sharing feature. This let is bypass many of the git issues. However, this also led to us getting a little sloppy when properly pulling/pushing which led to some merge conflicts that were difficult to resolve.
+
+## Future work
