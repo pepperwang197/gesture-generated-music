@@ -8,7 +8,8 @@ The bees..... they're in your hands......
 The goal of this project was to create an instrument to be played like a theremin, based on computer vision. Hand position would control what instrument would be played.
 
 ![Man playing a theremin](https://woodandfirestudio.com/wp-content/uploads/2022/11/dsefvd.jpg)
-*Fig 1: Example of man playing theremin*
+
+**Fig 1:** Example of man playing theremin
 
 A theremin is an instrument, with 2 metal antennas that the performer moves their hands around. The sound depends on the proximity of each hand from the antennas - one hand controls the pitch and the other controls the volume. 
 
@@ -29,7 +30,8 @@ To play soundfonts, we used the Python `pysoundfont` library. Instruments like p
 We wanted our theremin to have a to octave range centered around middle C (C4). Meidapipe's x and y coordinates are on a scale from 0 to 1 with origin centered at the top left of the screen. In order to get a 2 octave range we would need to expand the coordinate values from 0-1 to 0-24. So, we have `note = 72 - results.hand_landmarks[0][8].y*24`. We chose 72 since it is the high end of the range (note 72 is C3, one octave above middle C), and lets the theremin play at the desired pitch range.
 
 <img width="525" height="571" alt="Screenshot from 2026-11-10 15-34-46" src="https://github.com/user-attachments/assets/13e54ae7-cb32-4f4d-a09c-fc9d5cf3b40c" />
-*Fig 2: Visualization of landmarks place on hands by Mediapipe*
+
+**Fig 2:** Visualization of landmarks place on hands by Mediapipe
 
 
 ### Extracting frequency from notes
@@ -37,7 +39,8 @@ We wanted our theremin to have a to octave range centered around middle C (C4). 
 For the sine wave theremin we used pysinewave's `sinewave` function in to play different frequencies. Therefore, we would need to these note values into their respective frequency values. Human pitch perception is on a logarithmic scale, so the increase of pitch from 220 Hz to 440 Hz will sound the same as the increase from 220 Hz to 440 Hz. To convert the note to frequency we use the equation `freq = 440 * 2 ** ((note - 69) / 12)`440 is the frequency of A4 (note 69), 12 is the number of notes in an octave, note - 69 is how far off the note is from A4. Making this an exponential function with base 2 let's frequency double at each octave.
 
 <img width="810" height="468" alt="Screenshot from 2026-11-10 17-25-55" src="https://github.com/user-attachments/assets/64faba1f-d968-4c54-af7d-a9f29471bc7a" />
-*Fig 3: graph of notes with their corresponding frequencies*
+
+**Fig 3:** graph of notes with their corresponding frequencies
 
 ### Setting volume
 
