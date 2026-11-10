@@ -8,6 +8,7 @@ The bees..... they're in your hands......
 The goal of this project was to create an instrument to be played like a theremin, based on computer vision. Hand position would control what instrument would be played.
 
 ![Man playing a theremin](https://woodandfirestudio.com/wp-content/uploads/2022/11/dsefvd.jpg)
+*Fig 1: Example of man playing theremin*
 
 A theremin is an instrument, with 2 metal antennas that the performer moves their hands around. The sound depends on the proximity of each hand from the antennas - one hand controls the pitch and the other controls the volume. 
 
@@ -28,6 +29,7 @@ To play soundfonts, we used the Python `pysoundfont` library. Instruments like p
 We wanted our theremin to have a to octave range centered around middle C (C4). Meidapipe's x and y coordinates are on a scale from 0 to 1 with origin centered at the top left of the screen. In order to get a 2 octave range we would need to expand the coordinate values from 0-1 to 0-24. So, we have `note = 72 - results.hand_landmarks[0][8].y*24`. We chose 72 since it is the high end of the range (note 72 is C3, one octave above middle C), and lets the theremin play at the desired pitch range.
 
 <img width="525" height="571" alt="Screenshot from 2026-11-10 15-34-46" src="https://github.com/user-attachments/assets/13e54ae7-cb32-4f4d-a09c-fc9d5cf3b40c" />
+*Fig 2: Visualization of landmarks place on hands by Mediapipe*
 
 
 ### Extracting frequency from notes
@@ -35,6 +37,7 @@ We wanted our theremin to have a to octave range centered around middle C (C4). 
 For the sine wave theremin we used pysinewave's `sinewave` function in to play different frequencies. Therefore, we would need to these note values into their respective frequency values. Human pitch perception is on a logarithmic scale, so the increase of pitch from 220 Hz to 440 Hz will sound the same as the increase from 220 Hz to 440 Hz. To convert the note to frequency we use the equation `freq = 440 * 2 ** ((note - 69) / 12)`440 is the frequency of A4 (note 69), 12 is the number of notes in an octave, note - 69 is how far off the note is from A4. Making this an exponential function with base 2 let's frequency double at each octave.
 
 <img width="810" height="468" alt="Screenshot from 2026-11-10 17-25-55" src="https://github.com/user-attachments/assets/64faba1f-d968-4c54-af7d-a9f29471bc7a" />
+*Fig 3: graph of notes with their corresponding frequencies*
 
 ### Setting volume
 
@@ -68,4 +71,8 @@ We didn't document or organize our code as we wrote it. File names drifted away 
 
 A small investment in organization at the beginning would have saved us a lot of time later. It is beneficial to focus on organizing code while we write it ex: docstrings and comments as we write code, rather than afterward. Another lesson we learned was to always git pull/push when you are starting/finishing coding. Throughout the project we largely worked synchronously together via VScode's live sharing feature. This let is bypass many of the git issues. However, this also led to us getting a little sloppy when properly pulling/pushing which led to some merge conflicts that were difficult to resolve.
 
-## Future work
+## Improvements
+
+One of the main issues with this is detecting left vs right hand. Mediapipe has a designated hand 0 and hand 1, which correspond to the left and right hands respectively. However, if Mediapipe ever loses detection of either hand, the 0 and 1  hand can swap (so left becomes 1 and right becomes 0. If we had more time we could create and implement our own left/right hand detection algorithm (for example we look at which side of the hand the thumb is on and designate left and right hand accordingly).
+
+Another improvement we could make is the playing of different instruments. When a note is played it has an onset sound, followed by a trailing sound (think of pressing a key on a piano, it has a large initial sound with a quieter trailing sound). When we play a note via our sound font theremin, it only plays the onset sound without a trailing sound, creating a choppy sound (imagine that instead of pressing a piano key and holding it, you repeatedly press it). This can be fixed by by changing when we send notes to the synthesizer. Currently, our main loop turns the note off and back on for every video frame, so a note is restarted 30 or more times per second and we only ever hear its onset. Instead, we should track which note each hand is currently playing and send a new “note on” message only when the pitch or instrument actually changes. While the same note is held, we can keep updating its pitch bend and volume (using MIDI pitch bend and expression messages) without restarting it. This lets each note play through its full sound, including the quieter trailing portion, so it sounds like a held piano key rather than a repeatedly struck one.
