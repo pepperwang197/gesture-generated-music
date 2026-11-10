@@ -1,7 +1,12 @@
 # gesture-generated-music
 ### Pepper Wang & Luke Wei
 
-The bees..... they're in your hands......
+**How to run**
+- activate virtual environment using `source mp_env/bin/activate`
+- install requirements using `pip install -r requirements.txt`
+- run `python sinewave.py` for theremin that uses frequencies
+- run `python main.py` for theremin that uses different instruments and detects gesture
+
 
 ## Introduction
 
