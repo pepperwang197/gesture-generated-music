@@ -18,7 +18,7 @@ The goal of this project was to create an instrument to be played like a theremi
 
 A theremin is an instrument, with 2 metal antennas that the performer moves their hands around. The sound depends on the proximity of each hand from the antennas - one hand controls the pitch and the other controls the volume. 
 
-## Process
+## Implementation
 
 We decided to use MediaPipe's hand tracking algorithm. MediaPipe is a machine learning framework developed by Google that contains a hand landmarker model. It is able to detect 21 landmarks on a hand - the wrist, and the joints of every finger.
 
@@ -41,7 +41,7 @@ We wanted our theremin to have a to octave range centered around middle C (C4). 
 
 ### Extracting frequency from notes
 
-For the sine wave theremin we used pysinewave's `sinewave` function in to play different frequencies. Therefore, we would need to these note values into their respective frequency values. Human pitch perception is on a logarithmic scale, so the increase of pitch from 220 Hz to 440 Hz will sound the same as the increase from 220 Hz to 440 Hz. To convert the note to frequency we use the equation `freq = 440 * 2 ** ((note - 69) / 12)`440 is the frequency of A4 (note 69), 12 is the number of notes in an octave, note - 69 is how far off the note is from A4. Making this an exponential function with base 2 let's frequency double at each octave.
+For the sine wave theremin, we used pysinewave's `sinewave` function in to play different frequencies. Therefore, we would need to these note values into their respective frequency values. Human pitch perception is on a logarithmic scale, so the increase of pitch from 220 Hz to 440 Hz will sound the same as the increase from 220 Hz to 440 Hz. To convert the note to frequency we use the equation `freq = 440 * 2 ** ((note - 69) / 12)`440 is the frequency of A4 (note 69), 12 is the number of notes in an octave, note - 69 is how far off the note is from A4. Making this an exponential function with base 2 let's frequency double at each octave.
 
 <img width="810" height="468" alt="Screenshot from 2026-11-10 17-25-55" src="https://github.com/user-attachments/assets/64faba1f-d968-4c54-af7d-a9f29471bc7a" />
 
@@ -49,17 +49,17 @@ For the sine wave theremin we used pysinewave's `sinewave` function in to play d
 
 ### Setting volume
 
-To set the bolume for the theremin we extracted the x coordinate of the right hand and scaled that value from -60 to 0 (since volume in pysinewave is from -60 to 0). So when the right hand would be at the left edge of the screen the volume would be set to -60, and when it is on the right side of the screen it would be almost full volume.
+To set the volume for the theremin we extracted the x coordinate of the right hand and scaled that value from -60 to 0 (since volume in pysinewave is from -60 to 0). So when the right hand would be at the left edge of the screen the volume would be set to -60, and when it is on the right side of the screen it would be almost full volume.
 
 ## Design Decisions (note playing)
 
 ### Note selection
 
-We already had a working note selection algorithm and since `pysoundfont` lets you play note themselves we just repeated the same algorithm. However just playing discrete notes created an extremely choppy sound. To combat this we integrated a pitch bending algorithm. If the value from `note`had a decimal value of less than 0.5 the pitch of the note played is bent up by a semitone, and if it is greater than 0.5 it is bent down by a semitone.
+We already had a working note selection algorithm, and since `pysoundfont` lets you play notes, we just reused the same algorithm. However, soundfonts only contain discrete pitches (e.g. a piano can play a C or a C# but cannot go between them). To combat this we integrated a pitch bending algorithm. If the value from `note`had a decimal value of less than 0.5 the pitch of the note played is bent up by a semitone, and if it is greater than 0.5 it is bent down by a semitone.
 
 ### Gesture detection
 
-We decided to implement a very simple gesture We used media pipe's per-placed land marks to determine different gestures. To do this, we normalized each hand at 0,0 and normalized the size of each hand. We then looked at which finger's fingertip land mark had the largest y coordinate. Each Fingertip being the highest was a gesture (gesture 0 would be thumb being highest, 1 would be the index finger being the highest, etc.)
+We used the MediaPipe algorithm's landmarks to determine different gestures. To do this, we normalized each hand at 0,0 and normalized the size of each hand. We then looked at which finger's fingertip land mark had the largest y coordinate. Each fingertip being the highest relative to the others was a gesture (gesture 0 would be thumb being highest, 1 would be the index finger being the highest, etc.)
 
 ### Multiple instruments at once
 
@@ -69,7 +69,7 @@ Unlike the sinewave theremin, we decided to let each hand's x and y coordinate c
 
 ### Sparse and outdated documentation
 
-Several of our libraries were poorly documented. When we first looked up MediaPipe, the documentation we found was out of date, which led to confusion until we located the up-to-date documentation. We also found that looking at unofficial tutorials and community examples turned out to be a valuable supplement for understanding how to use it correctly. The documentation for `pysinewave` was even more incomplete, so we learned its behavior largely through experimentation. For example, one of the issues we had was the volume not changing when we we used the `set_volume` function. We later found out it was because we had to change the rate at which volume changes it. 
+Several of our libraries were poorly documented. When we first looked up MediaPipe, the documentation we found was out of date, which led to confusion until we located the up-to-date documentation. We also found that looking at unofficial tutorials and community examples turned out to be a valuable supplement for understanding how to use it correctly. The documentation for `pysinewave` was even more incomplete, so we learned its behavior largely through experimentation. For example, one of the issues we had was the volume not changing when we we used the `set_volume` function. We later found out it was because we had to also change the rate at which volume changes. 
 
 ### Code organization
 
