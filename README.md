@@ -37,3 +37,15 @@ For the sine wave theremin we used pysinewave's `sinewave` function in to play d
 To set the bolume for the theremin we extracted the x coordinate of the right hand and scaled that value from -60 to 0 (since volume in pysinewave is from -60 to 0). So when the right hand would be at the left edge of the screen the volume would be set to -60, and when it is on the right side of the screen it would be almost full volume.
 
 ## Design Decisions (note playing)
+
+### Note selection
+
+We already had a working note selection algorithm and since `pysoundfont` lets you play note themselves we just repeated the same algorithm. However just playing discrete notes created an extremely choppy sound. To combat this we integrated a pitch bending algorithm. If the value from `note`had a decimal value of less than 0.5 the pitch of the note played is bent up by a semitone, and if it is greater than 0.5 it is bent down by a semitone.
+
+### Gesture detection
+
+We decided to implement a very simple gesture We used media pipe's per-placed land marks to determine different gestures. To do this, we normalized each hand at 0,0 and normalized the size of each hand. We then looked at which finger's fingertip land mark had the largest y coordinate. Each Fingertip being the highest was a gesture (gesture 0 would be thumb being highest, 1 would be the index finger being the highest, etc.)
+
+### Multiple instruments at once
+
+Unlike the sinewave theremin, we decided to let each hand's x and y coordinate control a respective instrument's pitch and volume. At the start of the code, we initialized a synth for each instrument and only played notes from them when each respective gesture was detected from one of the hands.
