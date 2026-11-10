@@ -89,7 +89,7 @@ def main():
             freq = 440*2**((note-69)/12)
             #print(freq)
             sinewave.set_frequency(freq)
-            velocity = results.hand_landmarks[1][8].x * 50+0
+            velocity =-60+results.hand_landmarks[1][8].x * 60
             sinewave.set_volume(velocity)
             sinewave.play()
             #synth.noteon(0, note, velocity)
