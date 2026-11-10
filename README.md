@@ -21,7 +21,7 @@ After getting that working, we moved on to using gestures to determine instrumen
 
 To play soundfonts, we used the Python `pysoundfont` library. Instruments like piano only have discrete notes, not a continuous range of pitches, so we used pitch bending to get between half steps. 
 
-## Design Decisions
+## Design Decisions (sinewave)
 
 ### Extracting notes from coordinates
 
@@ -35,3 +35,5 @@ For the sine wave theremin we used pysinewave's `sinewave` function in to play d
 ### Setting volume
 
 To set the bolume for the theremin we extracted the x coordinate of the right hand and scaled that value from -60 to 0 (since volume in pysinewave is from -60 to 0). So when the right hand would be at the left edge of the screen the volume would be set to -60, and when it is on the right side of the screen it would be almost full volume.
+
+## Design Decisions (note playing)
