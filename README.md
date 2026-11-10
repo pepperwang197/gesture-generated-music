@@ -27,6 +27,8 @@ To play soundfonts, we used the Python `pysoundfont` library. Instruments like p
 
 We wanted our theremin to have a to octave range centered around middle C (C4). Meidapipe's x and y coordinates are on a scale from 0 to 1 with origin centered at the top left of the screen. In order to get a 2 octave range we would need to expand the coordinate values from 0-1 to 0-24. So, we have `note = 72 - results.hand_landmarks[0][8].y*24`. We chose 72 since it is the high end of the range (note 72 is C3, one octave above middle C), and lets the theremin play at the desired pitch range.
 
+<img width="525" height="571" alt="Screenshot from 2026-11-10 15-34-46" src="https://github.com/user-attachments/assets/13e54ae7-cb32-4f4d-a09c-fc9d5cf3b40c" />
+
 
 ### Extracting frequency from notes
 
