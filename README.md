@@ -20,3 +20,13 @@ For our MVP, our goal was to make a working "theremin", that would play pure sin
 After getting that working, we moved on to using gestures to determine instrument. We normalized a given hand's landmarks by using the wrist and the base of the middle finger as a reference to cancel out any rotation. Based on these normalized landmarks, we determined which fingertip was the highest. Each finger was mapped to a SoundFont containing audio for an instrument.
 
 To play soundfonts, we used the Python `pysoundfont` library. Instruments like piano only have discrete notes, not a continuous range of pitches, so we used pitch bending to get between half steps. 
+
+## Design Decisions
+
+### Extracting notes from coordinates
+
+We wanted our theremin to have a to octave range centered around middle C (C4). Meidapipe's x and y coordinates are on a scale from 0 to 1 with origin centered at the top left of the screen. In order to get a 2 octave range we would need to expand the coordinate values from 0-1 to 0-24. So, we have `note = 72 - results.hand_landmarks[0][8].y*24`. We chose 72 since it is the high end of the range (note 72 is C3, one octave above middle C), and lets the theremin play at the desired pitch range.
+
+
+
+For the sine wave theremin we used pysinewave's `sinewave` function in to play different frequencies. 
